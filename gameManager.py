@@ -15,7 +15,6 @@ class GameManager:
 
         # Blinds setup
         self.blinds_amount: list[int] = [500, 1000, 2000, 5000]
-        self.current_blind_index: int = 0
         
         # Card setup
         self.deck: Deck = Deck()
@@ -33,7 +32,7 @@ class GameManager:
 
     @property
     def current_blind_index(self) -> None:
-        return self.turn // len(self.blinds_amount)
+        return self.turns // len(self.blinds_amount)
 
 
     # Reset methods (usually start/end of a round)
@@ -54,7 +53,7 @@ class GameManager:
 
     def rotate_blinds_roles(self) -> None:
         """Rotate the blinds roles among the players"""
-        self.players.append(self.players.pop(0)) # Instead of rotating the blinds to the left, we just rotate the players anticlockwise (to the right)
+        self.players.append(self.players.pop(0)) # Instead of rotating the blinds clockwise, we just rotate the players anticlockwise (to the right)
 
     def distribute_starting_bets(self) -> None:
         """Distribute the starting bets (small blind and big blind) according to the current blinds amount and roles"""
@@ -98,11 +97,16 @@ class GameManager:
             player.all_in_bet()   
 
     def players_play_turn(self) -> None:
+        print("Self active players :", self.active_players)
         playing = True
         while playing:
             turn = True
             while turn:
-                for player in self.active_players:
+                for player in self.players:
+                    # Folded players
+                    if player not in self.active_players:
+                        continue
+                    
                     # If there is only one player left, he wins
                     if len(self.active_players) == 1:
                         playing = False
@@ -141,12 +145,11 @@ class GameManager:
         else:
             # We get the players with the best combinations and we check cards by cards to see who has the best cards
             players_at_equality_combinations = {key: players_combinations[key] for key in players_combinations.keys() if key in players_at_equality_power}
-            # TODO: when revealing the winner and it's winning combination, show the card/combination of cards (list) that got hime the win (in case of an equality on the first two cards it should show the third card, etc.)
             return max(players_at_equality_combinations, key=lambda k: tuple(players_at_equality_combinations[k]))          
                             
     def process_winner(self, winner: Player) -> None:
         """Process the winner of the round and give him the tokens"""
-        print(f"Player {winner} won with a {self.get_players_combinations()[winner][0].name.replace("_", " ")} !")
+        print(f"Player {winner} won with a {self.get_players_combinations()[winner][0].name.replace("_", " ")} : {self.get_players_combinations()[winner][1]} !")
         if winner.all_ined:
             winner.total_tokens += winner.current_bet
         else:
@@ -154,17 +157,22 @@ class GameManager:
 
 
     # Round methods
+    def distribute_starting_hands(self) -> None:
+        """Draw 2 cards for each player"""
+        for player in self.active_players:
+            player.hand.clear()
+            
+        for _ in range(2):
+            for player in self.active_players:
+                player.draw_card(self.deck, 1)
+    
     def round_start(self) -> None:
         """Start a new round"""
         self.active_players: list[Player] = [player for player in self.players if player.total_tokens > 0]
         self.deck.build_deck(shuffle=True)
         self.table.clear()
         self.distribute_starting_bets()
-
-        # Draw 2 cards for each player
-        for player in self.active_players:
-            player.hand.clear()
-            player.draw_card(self.deck, 2)
+        self.distribute_starting_hands()
 
     def play_round(self) -> None:
         """Play a entire round from start to finish"""

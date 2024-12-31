@@ -7,7 +7,7 @@ class PlayerAction(Enum):
     FOLD = "Fold"
     CHECK = "Check"
     CALL = "Call"
-    RAISE = "Raise"
+    RAISE = "Raise" # Double the current bet
     ALL_IN = "All in"
     NONE = "None"
 
@@ -32,7 +32,7 @@ class Player:
             self.hand.append(deck.draw())
 
 
-    # Card methods
+    # Combination methods
     def get_combination(self, table: list[Card]) -> tuple[CardCombinations, list[Card]]:
         """Return the best combination of cards the player has"""
         cards = self.hand + table
@@ -56,7 +56,7 @@ class Player:
             self.checked = False
         
         possible_actions = [PlayerAction.FOLD, PlayerAction.ALL_IN]
-        if self.total_tokens >= highest_player_bet:
+        if self.total_tokens >= highest_player_bet * 2:
             possible_actions.insert(1, PlayerAction.RAISE)
         if highest_player_bet > self.current_bet and self.total_tokens > highest_player_bet - self.current_bet:
             possible_actions.insert(1, PlayerAction.CALL)
@@ -120,7 +120,7 @@ class Player:
         while True:
             try:
                 print("Choose an amount to raise:", possible_raises)
-                amount: int = int(input("Amount: ")) + (highest_bet - self.current_bet)
+                amount: int = int(input("Amount: ")) + (highest_bet - self.current_bet) # We call before raising
 
                 if not amount in possible_raises:
                     print("Invalid amount. Please enter a number among these ones :", possible_raises)

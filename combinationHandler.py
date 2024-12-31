@@ -71,8 +71,8 @@ class CombinationHandler:
             if card.value == last_card.value - 1:
                 straight_cards.append(card)
                 if len(straight_cards) == 5:
-                    # We sort the cards in ascending order
-                    return sorted(straight_cards, key=lambda x: x.value, reverse=False)
+                    # We sort the cards in descending order # MODIFIED
+                    return sorted(straight_cards, key=lambda x: x.value, reverse=True)
             elif card.value == last_card.value:
                 continue
             else:
