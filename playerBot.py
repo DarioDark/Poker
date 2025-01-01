@@ -26,7 +26,7 @@ class Bot(Player):
         combination: CardCombinations = self.get_combination()[0]
         combination_cards: list[Card] = self.get_combination()[1]
         
-        # TODO : RAISE and ALL IN mechanic
+        # TODO : global RAISE and ALL IN mechanic
         if combination == CardCombinations.HIGH_CARD:
             return safest_action
             
