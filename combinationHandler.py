@@ -71,8 +71,8 @@ class CombinationHandler:
             if card.value == last_card.value - 1:
                 straight_cards.append(card)
                 if len(straight_cards) == 5:
-                    # We sort the cards in descending order # MODIFIED
-                    return sorted(straight_cards, key=lambda x: x.value, reverse=True)
+                    # We sort the cards in ascending order
+                    return sorted(straight_cards, key=lambda x: x.value, reverse=True) # MODIFIED
             elif card.value == last_card.value:
                 continue
             else:
@@ -88,7 +88,7 @@ class CombinationHandler:
         """Return all group of cards that form a pair in the cards"""
         pairs: list[list[Card]] = [pair for pair in self.get_card_num_pairs().values() if len(pair) == 2]
         if pairs:
-            return sorted(pairs, key=lambda pair: pair[0].value, reverse=False)
+            return sorted(pairs, key=lambda pair: pair[0].value, reverse=True) # MODIFIED
         return False
     
     def get_best_pair(self) -> list[Card] | bool:
@@ -96,7 +96,7 @@ class CombinationHandler:
         pairs: list[list[Card]] = self.get_best_pairs()
         if not pairs:
             return False
-        return pairs[-1]
+        return pairs[0]
 
     def get_best_two_pair(self) -> list[Card] | bool:
         """Return the two best pairs in the cards"""
@@ -105,7 +105,7 @@ class CombinationHandler:
             return False
         
         # Sort pairs by the value of the cards in descending order
-        pairs.sort(key=lambda pair: pair[0].value)
+        pairs.sort(key=lambda pair: pair[0].value, reverse=True) # MODIFIED
         return pairs[:2]
 
     def get_best_three_of_a_kind(self) -> list[list[Card]] | bool:
@@ -133,7 +133,7 @@ class CombinationHandler:
         straight_cards: list[Card] = self.get_card_straight()
         if not straight_cards:
             return False
-        return straight_cards[-5:]
+        return straight_cards[:5] # MODIFIED (-5:)
 
     def get_best_flush(self) -> dict[str: list[Card]] | bool:
         """Return the best flush (5 cards of the same suit) in the cards"""
@@ -142,7 +142,7 @@ class CombinationHandler:
             return False
         for color, cards in colors.items():
             if len(cards) >= 5:
-                return sorted(colors[color], key=lambda x: x.value)[-5:]
+                return sorted(colors[color], key=lambda x: x.value, reverse=True)[:5] # MODIFIED
         return False
 
     def get_best_full_house(self) -> list[list[Card]] | bool:
@@ -151,7 +151,7 @@ class CombinationHandler:
         best_three_of_a_kind: list[Card] = self.get_best_three_of_a_kind()
         if not (best_pair and best_three_of_a_kind):
             return False
-        return best_pair + best_three_of_a_kind
+        return best_three_of_a_kind + best_pair # MODIFIED
 
     def get_best_straight_flush(self) -> list[Card] | bool:
         """Return the best straight flush in the cards"""
@@ -162,7 +162,7 @@ class CombinationHandler:
         for i in range(len(straight_cards) - 4):
             cards_to_check: list[Card] = straight_cards[i:i+5]
             if self.is_flush(cards_to_check):
-                return sorted(cards_to_check, key=lambda x: x.value, reverse=False)
+                return sorted(cards_to_check, key=lambda x: x.value, reverse=True) # MODIFIED
         return False
 
     def get_best_royal_flush(self) -> list[Card] | bool:
@@ -171,7 +171,7 @@ class CombinationHandler:
         if not straight_flush_cards:
             return False
         if list(map(lambda x: x.value, straight_flush_cards)) == [10, 11, 12, 13 ,14]:
-            return sorted(straight_flush_cards, key=lambda x: x.value, reverse=False)
+            return sorted(straight_flush_cards, key=lambda x: x.value, reverse=True) # MODIFIED
         return False
     
     def get_final_combination(self) -> tuple[CardCombinations, list[Card]]:

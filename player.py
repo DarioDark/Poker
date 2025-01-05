@@ -114,32 +114,39 @@ class Player:
         return amount
         
 
-    def raise_bet(self, highest_bet: int, current_blind: int) -> int:
+    def raise_bet(self, highest_bet: int) -> int:
         """Calls the bet and raises it by a certain amount of tokens chosen by the player"""
-        possible_raises: tuple[int, int, int] = (current_blind, current_blind*2, current_blind*4)
-        while True:
-            try:
-                print("Choose an amount to raise:", possible_raises)
-                amount: int = int(input("Amount: ")) + (highest_bet - self.current_bet) # We call before raising
+        # The raise is always the highest_bet * 2
+        amount: int = (highest_bet - self.current_bet) # first we "call"
+        amount += highest_bet # then we raise
+        return amount
+        
+        
+        
+        # possible_raises: tuple[int, int, int] = (current_blind, current_blind*2, current_blind*4)
+        # while True:
+        #     try:
+        #         print("Choose an amount to raise:", possible_raises)
+        #         amount: int = int(input("Amount: ")) + (highest_bet - self.current_bet) # We call before raising
 
-                if not amount in possible_raises:
-                    print("Invalid amount. Please enter a number among these ones :", possible_raises)
-                    continue
+        #         if not amount in possible_raises:
+        #             print("Invalid amount. Please enter a number among these ones :", possible_raises)
+        #             continue
 
-                if amount > self.total_tokens:
-                    print("You can't bet more than you have.")
-                    continue
+        #         if amount > self.total_tokens:
+        #             print("You can't bet more than you have.")
+        #             continue
 
-                if amount < highest_bet:
-                    print("You can't bet less than the highest bet.")
+        #         if amount < highest_bet:
+        #             print("You can't bet less than the highest bet.")
                 
-                    continue
+        #             continue
 
-                self.bet(amount)
-                return amount
+        #         self.bet(amount)
+        #         return amount
             
-            except ValueError:
-                print("Invalid amount. Please enter a number.")
+        #     except ValueError:
+        #         print("Invalid amount. Please enter a number.")
 
     def all_in_bet(self) -> int:
         """Bet all the tokens the player has left"""

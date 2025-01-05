@@ -8,8 +8,9 @@ from playerBot import Bot
 class GameManager:
     def __init__(self, player_nbr: int) -> None:
         # Data setup
-        # self.players: list[Player] = [Bot() for _ in range(player_nbr - 1)] + [Player()]
-        self.players = [Player("A"), Player("B"), Player("C")]
+        self.players: list[Player] = [Bot(str(i)) for i in range(player_nbr - 1)] + [Player("Moi")]
+        print(self.players)
+        # self.players = [Player("A"), Player("B"), Player("C")]
         self.active_players = self.players # The players that are still in the game (haven't folded or lost all their money)
         self.turns: int = 0
 
@@ -77,6 +78,7 @@ class GameManager:
         return {player: player.get_combination_power(self.table) for player in self.active_players}
 
     def process_player_action(self, player: Player, action: PlayerAction) -> None:
+        print(action.value)
         if action == PlayerAction.FOLD:
             self.active_players.remove(player)
 
@@ -89,7 +91,7 @@ class GameManager:
 
         elif action == PlayerAction.RAISE:
             player.checked = True
-            player.raise_bet(self.highest_bet, self.blinds_amount[self.current_blind_index])
+            player.raise_bet(self.highest_bet)
             
         elif action == PlayerAction.ALL_IN:
             player.checked = True
@@ -97,7 +99,6 @@ class GameManager:
             player.all_in_bet()   
 
     def players_play_turn(self) -> None:
-        print("Self active players :", self.active_players)
         playing = True
         while playing:
             turn = True
@@ -169,6 +170,7 @@ class GameManager:
     def round_start(self) -> None:
         """Start a new round"""
         self.active_players: list[Player] = [player for player in self.players if player.total_tokens > 0]
+        print("Self active players:", self.active_players)
         self.deck.build_deck(shuffle=True)
         self.table.clear()
         self.distribute_starting_bets()

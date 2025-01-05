@@ -2,62 +2,73 @@ from card import Card
 from combinationHandler import CardCombinations
 from player import Player, PlayerAction
 
-class Bot(Player):
-    def __init__(self) -> None:
-        super().__init__()
+class Bot(Player): # TODO : print actions like a real player (maybe move the print somewhere to not repeat it)
+    def __init__(self, name) -> None:
+        super().__init__(name=name)
 
     def choose_action(self, table: list[Card], highest_player_bet: int) -> PlayerAction:
         """Does some math to find an optimal-ish play"""
-        cards: list[Card] = self.hand + table
-
+        
+        # Processing the data to make the right choice
+        combination: CardCombinations = self.get_combination(table)[0]
+        combination_cards: list[Card] = self.get_combination(table)[1]
+        
         # Setup of the possible actions
         possible_actions: list[PlayerAction] = self.define_possible_actions(highest_player_bet)
         safest_action: PlayerAction = PlayerAction.FOLD
         follow_action: PlayerAction = PlayerAction.CHECK
-        risky_action: PlayerAction = PlayerAction.RAISE
-        
+                
         if PlayerAction.CHECK in possible_actions:
             safest_action = PlayerAction.CHECK
         if PlayerAction.CALL in possible_actions:
             follow_action: PlayerAction = PlayerAction.CALL
-
-
-        # Processing the data to make the right choice
-        combination: CardCombinations = self.get_combination()[0]
-        combination_cards: list[Card] = self.get_combination()[1]
         
+        print("--------------------------------------------------------------------------------------------------")
+        print("Player", self.name)
+        print("The highest bet is:", highest_player_bet)
+        print("Your current bet is:", self.current_bet)
+        print("You have", self.total_tokens, "tokens.\n")
+        print("Your hand:", self.hand, " | Table:", table)
+        print("Your current combination:", combination.name.replace("_", " "), " | Cards:", combination_cards)
+
+
         # TODO : global RAISE and ALL IN mechanic
         if combination == CardCombinations.HIGH_CARD:
             return safest_action
             
         elif combination == CardCombinations.PAIR:
-            if combination_cards[0].value < 11:
-                return safest_action
-            return follow_action
+            if combination_cards[0].value >= 11:
+                return follow_action
+            return safest_action
 
         elif combination == CardCombinations.TWO_PAIR:
-            if combination_cards[0][0].value < 11:
-                return safest_action
+            if combination_cards[0][0].value >= 11:
+                return follow_action
+            return safest_action
         
         elif combination == CardCombinations.THREE_OF_A_KIND:
-            if combination_cards[0].value < 6:
-                return safest_action
-            # TODO : check if the pair is : 2 in hand + 1 on table -> RAISE
+            if all(card.value == combination_cards[0].value for card in self.hand): # Check to make sure the bot has 2 out of the 3 cards in hand
+                return follow_action
+            return safest_action
             
         elif combination == CardCombinations.FOUR_OF_A_KIND:
-            ... # TODO : check if the colmbination is : 2 in hand + 2 on table -> RAISE
+            if all(card.value == combination_cards[0].value for card in self.hand): # Check to make sure the bot has 2 out of the 4 cards in hand
+                return follow_action
+            return safest_action
             
         elif combination == CardCombinations.FULL_HOUSE:
-            ... # TODO : Raise
+            if all(card.value == combination_cards[0][0].value for card in self.hand) and all(card.value == combination_cards[1][0].value for card in self.hand): # Check to make sure the bot has at least 1 of the three kind and one of the pair in his hand
+                return follow_action
+            return safest_action
         
         elif combination == CardCombinations.STRAIGHT:
-            ... # TODO : Raise 
-        
-        elif combination == CardCombinations.STRAIGHT_FLUSH:
-            ... # TODO : Raise
+            return PlayerAction.RAISE
             
         elif combination == CardCombinations.FLUSH:
-            ... # TODO : Raise unless the straight is like 2 -> 7 (a bit weak depending on the table)4
+            return PlayerAction.RAISE
+            
+        elif combination == CardCombinations.STRAIGHT_FLUSH:
+            return PlayerAction.RAISE
             
         elif combination == CardCombinations.ROYAL_FLUSH:
             return PlayerAction.ALL_IN
