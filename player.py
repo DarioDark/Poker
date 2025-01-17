@@ -83,6 +83,7 @@ class Player:
                 best_combination_cards: list[Card] = self.get_combination(table)[1]
 
                 # TODO : color code for the combination
+                # TODO : print better (not lists)
 
                 print(f"Hand: {self.hand} | Table: {table}")
                 print(f"Your current combination: {best_combination.name.replace("_", " ")} | Cards: {best_combination_cards}\n")

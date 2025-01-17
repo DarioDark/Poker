@@ -1,14 +1,10 @@
-# External libraries
-from enum import Enum
+from termcolor import colored
 
-class CardCombinations(Enum):
-    HIGH_CARD = 1
-    PAIR = 2
-    TWO_PAIR = 3
-    THREE_OF_A_KIND = 4
-    STRAIGHT = 5
-    FLUSH = 6
-    FULL_HOUSE = 7
-    FOUR_OF_A_KIND = 8
-    STRAIGHT_FLUSH = 9
-    ROYAL_FLUSH = 10
+print(colored("This is grey text", "grey"))
+print(colored("This is red text", "red"))
+print(colored("This is green text", "green"))
+print(colored("This is yellow text", "yellow"))
+print(colored("This is blue text", "blue"))
+print(colored("This is magenta text", "magenta"))
+print(colored("This is cyan text", "cyan"))
+print(colored("This is white text", "white"))

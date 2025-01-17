@@ -125,10 +125,10 @@ class GameManager:
                         break
 
                     print("--------------------------------------------------------------------------------------------------")
-                    print(colored(f"Player {player.name}", "blue", attrs=["bold"]))
+                    print(colored(f"Player {player.name}", "yellow", attrs=["bold"]))
                     print(f"The highest bet is: {self.highest_bet}")
                     print(f"Your current bet is: {player.current_bet}")
-                    print(f"You have: {player.total_tokens}, tokens.\n")
+                    print(f"Total tokens: {player.total_tokens} tokens.\n")
 
                     action: PlayerAction = player.choose_action(self.table, self.highest_bet)
                     self.process_player_action(player, action)

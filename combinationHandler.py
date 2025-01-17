@@ -1,4 +1,4 @@
-# External library
+# External libraries
 from enum import Enum
 
 # Internal libraries
