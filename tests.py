@@ -1,3 +1,4 @@
+# External libraries
 from enum import Enum
 
 class CardCombinations(Enum):
@@ -11,5 +12,3 @@ class CardCombinations(Enum):
     FOUR_OF_A_KIND = 8
     STRAIGHT_FLUSH = 9
     ROYAL_FLUSH = 10
-
-print(sorted(CardCombinations, reverse=True, key=lambda c: c.value))

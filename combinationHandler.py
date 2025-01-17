@@ -1,6 +1,9 @@
+# External library
+from enum import Enum
+
+# Internal libraries
 from card import Card, CardSuits
 from collections import defaultdict
-from enum import Enum
 
 
 class CardCombinations(Enum):

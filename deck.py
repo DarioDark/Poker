@@ -1,4 +1,7 @@
+# External libraries
 import random
+
+# Internal libraries
 from card import Card, CardSuits
 
 

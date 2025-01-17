@@ -1,5 +1,9 @@
+# External libraries
 import os
+from termcolor import colored
+from time import sleep
 
+# Internal libraries
 from combinationHandler import CardCombinations
 from player import Player, PlayerAction
 from card import Card, CardSuits
@@ -11,7 +15,6 @@ class GameManager:
     def __init__(self, player_nbr: int) -> None:
         # Data setup
         self.players: list[Player] = [Bot(str(i)) for i in range(player_nbr - 1)] + [Player("Moi")]
-        print(self.players)
         # self.players = [Player("A"), Player("B"), Player("C")]
         self.active_players = self.players # The players that are still in the game (haven't folded or lost all their money)
         self.turns: int = 0
@@ -80,7 +83,6 @@ class GameManager:
         return {player: player.get_combination_power(self.table) for player in self.active_players}
 
     def process_player_action(self, player: Player, action: PlayerAction) -> None:
-        print(action.value)
         if action == PlayerAction.FOLD:
             self.active_players.remove(player)
 
@@ -122,8 +124,16 @@ class GameManager:
                         turn = False
                         break
 
+                    print("--------------------------------------------------------------------------------------------------")
+                    print(colored(f"Player {player.name}", "blue", attrs=["bold"]))
+                    print(f"The highest bet is: {self.highest_bet}")
+                    print(f"Your current bet is: {player.current_bet}")
+                    print(f"You have: {player.total_tokens}, tokens.\n")
+
                     action: PlayerAction = player.choose_action(self.table, self.highest_bet)
                     self.process_player_action(player, action)
+                
+                    sleep(2)
 
             if len(self.table) == 5:
                 return
@@ -156,7 +166,6 @@ class GameManager:
                             
     def process_winners(self, winners: list[Player]) -> None:
         """Process the winnners of the round and give them the tokens"""
-        # BUG : Player is not iterable
         for winner in winners:
             print(f"Player {winner} won with a {self.get_players_combinations()[winner][0].name.replace("_", " ")} : {self.get_players_combinations()[winner][1]} !")
             if winner.all_ined:
@@ -166,6 +175,7 @@ class GameManager:
                 winner.total_tokens += amount
 
         input("Press Enter to continue...")
+        os.system("cls")
 
     # Round methods
     def distribute_starting_hands(self) -> None:
@@ -180,7 +190,6 @@ class GameManager:
     def round_start(self) -> None:
         """Start a new round"""
         self.active_players: list[Player] = [player for player in self.players if player.total_tokens > 0]
-        print("Self active players:", self.active_players)
         self.deck.build_deck(shuffle=True)
         self.table.clear()
         self.distribute_starting_bets()
@@ -192,7 +201,6 @@ class GameManager:
         self.players_play_turn()
 
         winner: Player = self.define_winners()
-        # TODO : Reveal the winner before drawing other cards (freeze the game and then reveal the winner)
         self.process_winners(winner)
         
         self.rotate_blinds_roles()

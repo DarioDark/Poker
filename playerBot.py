@@ -1,8 +1,10 @@
+# External libraries
+from random import randint
+
+# Internal libraries
 from card import Card
 from combinationHandler import CardCombinations
 from player import Player, PlayerAction
-
-from random import randint
 
 class Bot(Player): # TODO : print actions like a real player (maybe move the print somewhere to not repeat it)
     def __init__(self, name) -> None:
@@ -114,17 +116,6 @@ class Bot(Player): # TODO : print actions like a real player (maybe move the pri
     def play_royal_flush(self, table, combination_cards) -> PlayerAction:
         return PlayerAction.ALL_IN
 
-
-    # Information methods
-    def print_data(self, highest_player_bet, table, combination, combination_cards) -> None:
-        print("--------------------------------------------------------------------------------------------------")
-        print("Player", self.name)
-        print("The highest bet is:", highest_player_bet)
-        print("Your current bet is:", self.current_bet)
-        print("You have", self.total_tokens, "tokens.\n")
-        print("Your hand:", self.hand, " | Table:", table)
-        print("Your current combination:", combination.name.replace("_", " "), " | Cards:", combination_cards)
-
     def update_possible_actions(self, highest_player_bet: int) -> list[PlayerAction]:
         self.possible_actions: list[PlayerAction] = self.define_possible_actions(highest_player_bet)
                 
@@ -135,8 +126,6 @@ class Bot(Player): # TODO : print actions like a real player (maybe move the pri
         combination_cards: list[Card] = self.get_combination(table)[1]
 
         self.update_possible_actions(highest_player_bet)
-        print("highest_player_bet:", highest_player_bet)
-        self.print_data(highest_player_bet, table, combination, combination_cards)
 
         # Choosing the action
         new_action: PlayerAction = self.action_dict[combination](table, combination_cards)

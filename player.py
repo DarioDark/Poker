@@ -1,4 +1,7 @@
+# External libraries
 from enum import Enum
+
+# Internal libraries
 from card import Card
 from combinationHandler import CombinationHandler, CardCombinations
 from deck import Deck
@@ -66,11 +69,6 @@ class Player:
         
     def choose_action(self, table: list[Card], highest_player_bet: int) -> PlayerAction:
         """Choose an action to do depending on the current state of the game"""
-        print("--------------------------------------------------------------------------------------------------")
-        print("Player", self.name)
-        print("The highest bet is:", highest_player_bet)
-        print("Your current bet is:", self.current_bet)
-        print("You have", self.total_tokens, "tokens.\n")
 
         possible_actions: list[PlayerAction] = self.define_possible_actions(highest_player_bet)
         # If the player has no more tokens, he can't do anything other than waiting for the other players to finish the round
@@ -84,18 +82,20 @@ class Player:
                 best_combination: CardCombinations = self.get_combination(table)[0]
                 best_combination_cards: list[Card] = self.get_combination(table)[1]
 
-                print("Your hand:", self.hand, " | Table:", table)
-                print("Your current combination:", best_combination.name.replace("_", " "), " | Cards:", best_combination_cards)
-                print("Choose an action:", list(map(lambda x: x.value.capitalize(), possible_actions)))
+                # TODO : color code for the combination
+
+                print(f"Hand: {self.hand} | Table: {table}")
+                print(f"Your current combination: {best_combination.name.replace("_", " ")} | Cards: {best_combination_cards}\n")
+                print(f"Choose an action: {list(map(lambda x: x.value.capitalize(), possible_actions))}")
                 
                 action = PlayerAction(str(input("Action: ")).capitalize())
                 if action in possible_actions:
                     return action
                 
-                print("Invalid action. Please choose one of the following:", possible_actions)
+                print(f"Invalid action. Please choose one of the following: {possible_actions}")
 
             except ValueError:
-                print("Invalid action. Please choose one of the following:", possible_actions)
+                print(f"Invalid action. Please choose one of the following: {possible_actions}")
 
 
     # Betting methods
