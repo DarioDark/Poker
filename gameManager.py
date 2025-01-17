@@ -1,3 +1,5 @@
+import os
+
 from combinationHandler import CardCombinations
 from player import Player, PlayerAction
 from card import Card, CardSuits
@@ -103,6 +105,7 @@ class GameManager:
         while playing:
             turn = True
             while turn:
+                # os.system("cls")
                 for player in self.players:
                     # Folded players
                     if player not in self.active_players:
@@ -129,7 +132,7 @@ class GameManager:
             self.put_card_on_table()
             self.reset_checked_players()
 
-    def define_winner(self) -> Player:
+    def define_winners(self) -> list[Player]:
         """Define the winner of the round"""
         # We get the player(s) with the best combinations
         players_combinations: dict[Player: tuple[CardCombinations, list[Card]]] = self.get_players_combinations()
@@ -142,20 +145,27 @@ class GameManager:
             for equal_player in players_at_equality_power:
                 for player in players_combinations:
                     if equal_player == player:
-                        return player
+                        return [player]
         else:
             # We get the players with the best combinations and we check cards by cards to see who has the best cards
             players_at_equality_combinations = {key: players_combinations[key] for key in players_combinations.keys() if key in players_at_equality_power}
-            return max(players_at_equality_combinations, key=lambda k: tuple(players_at_equality_combinations[k]))          
+            max_combination_value = max(players_at_equality_combinations.values())
+            # Collect all players with the maximum combination value
+            winners = [key for key, value in players_at_equality_combinations.items() if value == max_combination_value]
+            return winners        
                             
-    def process_winner(self, winner: Player) -> None:
-        """Process the winner of the round and give him the tokens"""
-        print(f"Player {winner} won with a {self.get_players_combinations()[winner][0].name.replace("_", " ")} : {self.get_players_combinations()[winner][1]} !")
-        if winner.all_ined:
-            winner.total_tokens += winner.current_bet
-        else:
-            winner.total_tokens += self.total_bet
+    def process_winners(self, winners: list[Player]) -> None:
+        """Process the winnners of the round and give them the tokens"""
+        # BUG : Player is not iterable
+        for winner in winners:
+            print(f"Player {winner} won with a {self.get_players_combinations()[winner][0].name.replace("_", " ")} : {self.get_players_combinations()[winner][1]} !")
+            if winner.all_ined:
+                winner.total_tokens += winner.current_bet
+            else:
+                amount: int = self.total_bet // len(winners)
+                winner.total_tokens += amount
 
+        input("Press Enter to continue...")
 
     # Round methods
     def distribute_starting_hands(self) -> None:
@@ -181,8 +191,9 @@ class GameManager:
         self.round_start()
         self.players_play_turn()
 
-        winner: Player = self.define_winner()
-        self.process_winner(winner)
+        winner: Player = self.define_winners()
+        # TODO : Reveal the winner before drawing other cards (freeze the game and then reveal the winner)
+        self.process_winners(winner)
         
         self.rotate_blinds_roles()
         self.reset_checked_players()

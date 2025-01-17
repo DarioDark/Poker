@@ -1,5 +1,15 @@
-# List of 15 elements
-elements = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+from enum import Enum
 
-# Print the list
-print(sorted(elements, reverse=True)[0])
+class CardCombinations(Enum):
+    HIGH_CARD = 1
+    PAIR = 2
+    TWO_PAIR = 3
+    THREE_OF_A_KIND = 4
+    STRAIGHT = 5
+    FLUSH = 6
+    FULL_HOUSE = 7
+    FOUR_OF_A_KIND = 8
+    STRAIGHT_FLUSH = 9
+    ROYAL_FLUSH = 10
+
+print(sorted(CardCombinations, reverse=True, key=lambda c: c.value))

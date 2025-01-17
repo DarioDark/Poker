@@ -56,7 +56,7 @@ class Player:
             self.checked = False
         
         possible_actions = [PlayerAction.FOLD, PlayerAction.ALL_IN]
-        if self.total_tokens >= highest_player_bet * 2:
+        if self.total_tokens > highest_player_bet * 2:
             possible_actions.insert(1, PlayerAction.RAISE)
         if highest_player_bet > self.current_bet and self.total_tokens > highest_player_bet - self.current_bet:
             possible_actions.insert(1, PlayerAction.CALL)
@@ -119,6 +119,7 @@ class Player:
         # The raise is always the highest_bet * 2
         amount: int = (highest_bet - self.current_bet) # first we "call"
         amount += highest_bet # then we raise
+        self.bet(amount)
         return amount
         
         
